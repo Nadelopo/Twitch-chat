@@ -9,7 +9,7 @@ export default defineConfig({
     Userscript({
       entry: 'src/main.jsx',
       header: {
-        name: 'Twitch',
+        name: 'Twitch-preact',
         version: '1',
         description: 'chat',
         match: 'https://www.twitch.tv/*',

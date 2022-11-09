@@ -1,5 +1,3 @@
-import { useState } from 'preact/hooks'
-
 export function App() {
   let chatContainer = document.querySelector(
     '.chat-scrollable-area__message-container'
@@ -7,7 +5,7 @@ export function App() {
 
   let intervalValue = 0
 
-  const setBoderAndText = (el) => {
+  const setElementStyle = (el) => {
     const color = window.getComputedStyle(
       el.querySelector('.chat-author__display-name')
     ).color
@@ -18,7 +16,6 @@ export function App() {
 
     if (!text) text = el.querySelector('.text-fragment')
     if (!mention) mention = el.querySelector('.mention-fragment')
-
     if (border && window.getComputedStyle(border).borderColor !== color) {
       border.style.borderColor = color
     }
@@ -33,25 +30,18 @@ export function App() {
     }
   }
 
-  const [update, setUpdate] = useState(0)
-
   const setStyles = () => {
     const chatMessage = document.querySelectorAll('.chat-line__no-background')
     chatMessage.forEach((el) => {
-      setBoderAndText(el)
+      setElementStyle(el)
     })
   }
 
-  const callInterval = () => {
-    intervalValue = setInterval(() => {
-      setUpdate((val) => val + 1)
-    }, 100)
-  }
-
-  setStyles()
   let chatObserv = new MutationObserver(() => {
     setStyles()
   })
+
+  console.log(chatContainer, '123123')
 
   chatObserv.observe(chatContainer, {
     childList: true,
@@ -62,7 +52,7 @@ export function App() {
     const currentLocation = window.location.href
     if (currentLocation !== lastLocation) {
       lastLocation = currentLocation
-      callInterval()
+      intervalValue = setInterval(() => setStyles(), 100)
     }
   }, 500)
 

@@ -17,8 +17,7 @@ export function App() {
 
       let text
       setTimeout(() => {
-        text = el.querySelector('.seventv-message-context')
-        if (!text) text = el.querySelector('.text-fragment')
+        text = el.lastElementChild
         if (text && window.getComputedStyle(text).color !== color) {
           text.style.color = color
         }

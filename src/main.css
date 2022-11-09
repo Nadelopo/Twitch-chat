@@ -1,0 +1,14 @@
+.chat-line__username-container {
+  padding: 1px 6px;
+  border: 2px solid #fff;
+  border-radius: 50px!important;
+  margin-right: 5px;
+}
+
+span[data-test-selector="chat-message-separator"] {
+  display: none;
+}
+
+.chat-badge {
+  border-radius: 8px !important;
+}

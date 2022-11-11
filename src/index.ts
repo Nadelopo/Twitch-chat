@@ -1,11 +1,14 @@
 import { el, mount } from 'redom'
 import S from './style.css'
 
+GM_addStyle(S)
+
 const func = () => {
-  GM_addStyle(S)
   let chatContainer = document.querySelector(
     '.chat-scrollable-area__message-container'
   )
+
+  let interval = 0
 
   const setBoderAndText = () => {
     const chatMessage = document.querySelectorAll('.chat-line__no-background')
@@ -35,22 +38,18 @@ const func = () => {
       if (mention && window.getComputedStyle(mention).color !== color) {
         if (color) mention.style.color = color
       }
+
+      if (interval) {
+        setTimeout(() => {
+          if (text && window.getComputedStyle(text).color === color) {
+            clearInterval(interval)
+            interval = 0
+          }
+        }, 5000)
+      }
     })
   }
 
-  const setStyles = () => {
-    let chatObserv = new MutationObserver(() => {
-      setBoderAndText()
-    })
-
-    if (chatContainer) {
-      chatObserv.observe(chatContainer, {
-        childList: true,
-      })
-    }
-  }
-
-  setStyles()
   let lastLocation = ''
   setInterval(() => {
     const currentLocation = window.location.href
@@ -59,7 +58,12 @@ const func = () => {
       chatContainer = document.querySelector(
         '.chat-scrollable-area__message-container'
       )
-      setStyles()
+      let chatObserv = new MutationObserver(() => setBoderAndText())
+      interval = setInterval(() => setBoderAndText(), 500)
+
+      chatObserv.observe(chatContainer, {
+        childList: true,
+      })
     }
   }, 500)
 }

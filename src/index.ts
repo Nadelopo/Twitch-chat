@@ -4,10 +4,6 @@ import S from './style.css'
 GM_addStyle(S)
 
 const func = () => {
-  let chatContainer = document.querySelector(
-    '.chat-scrollable-area__message-container'
-  )
-
   let interval = 0
 
   const setBoderAndText = () => {
@@ -28,7 +24,6 @@ const func = () => {
       setTimeout(() => {
         text = el.lastElementChild
         if (text && window.getComputedStyle(text).color !== color) {
-          //@ts-ignore
           if (color) text.style.color = color
         }
       })
@@ -55,7 +50,7 @@ const func = () => {
     const currentLocation = window.location.href
     if (currentLocation !== lastLocation) {
       lastLocation = currentLocation
-      chatContainer = document.querySelector(
+      let chatContainer = document.querySelector(
         '.chat-scrollable-area__message-container'
       )
       let chatObserv = new MutationObserver(() => setBoderAndText())
@@ -66,6 +61,13 @@ const func = () => {
       })
     }
   }, 500)
+
+  addEventListener('click', () => {
+    const open = document.querySelector('.chat-input-tray__open')
+    if (open) {
+      setBoderAndText()
+    }
+  })
 }
 
 const App = el('div')

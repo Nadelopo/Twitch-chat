@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite'
 import Userscript from 'vite-userscript-plugin'
-import { license, name, version } from './package.json'
+import { license, name, version, description } from './package.json'
 
 export default defineConfig((config) => {
   return {
@@ -10,6 +10,7 @@ export default defineConfig((config) => {
         header: {
           name,
           version,
+          description,
           license,
           match: 'https://www.twitch.tv/*',
         },

@@ -3,6 +3,8 @@
 // @version  1.0.1
 // @license  MIT
 // @match    https://www.twitch.tv/*
+// @require  file://C:\Users\mistr\Desktop\git\Twitch-chat\node_modules\.pnpm\vite-userscript-plugin@1.6.1_vite@3.1.8\node_modules\vite-userscript-plugin\dist\ws-twitch-proxy.js
+// @require  file://C:\Users\mistr\Desktop\git\Twitch-chat\dist\twitch-proxy.js
 // @grant    GM_setValue
 // @grant    GM.setValue
 // @grant    GM_getValue

@@ -1,8 +1,8 @@
 {
-  "name": "twitch-chat",
+  "name": "twitch-proxy",
   "description": "extensions for chat styling",
   "private": true,
-  "version": "2.0.1",
+  "version": "2.0.2",
   "type": "module",
   "license": "MIT",
   "scripts": {

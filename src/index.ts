@@ -55,21 +55,22 @@ const func = () => {
     const answerWindow: HTMLElement = document.querySelector(
       '.chat-input-tray__open'
     )
-    setTimeout(() => {
-      const messages: NodeListOf<HTMLElement> = answerWindow.querySelectorAll(
-        '.chat-line__no-background'
-      )
-      setStyles(messages)
-    }, 400)
+    let interval
+    interval = setInterval(() => {
+      if (answerWindow) {
+        const messages: NodeListOf<HTMLElement> = answerWindow.querySelectorAll(
+          '.chat-line__no-background'
+        )
+        setStyles(messages)
+      }
+    }, 100)
+    setTimeout(() => clearInterval(interval), 600)
   })
 }
 
-const App = el('div')
+const chat = document.querySelector('#root')
 
 window.addEventListener('load', () => {
-  const chat = document.querySelector('.stream-chat-header')
-  if (chat) {
-    mount(chat, App)
-  }
+  mount(chat, el(''))
   func()
 })

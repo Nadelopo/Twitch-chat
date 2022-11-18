@@ -1,6 +1,6 @@
 // ==UserScript==
-// @name        twitch-proxy
-// @version     2.0.2
+// @name        twitch-chat
+// @version     2.1.0
 // @description extensions for chat styling
 // @license     MIT
 // @match       https://www.twitch.tv/*

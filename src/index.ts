@@ -1,36 +1,28 @@
-import { el, mount } from 'redom'
 import S from './style.css'
-
 GM_addStyle(S)
 
-const func = () => {
-  const setBoderAndText = (el: HTMLElement) => {
-    const nick = el.querySelector('.chat-author__display-name')
-    let color: string | null = null
+const setBoderAndText = (el: HTMLElement, color: string) => {
+  el.style.color = color
+  const border: HTMLElement = el.querySelector('.chat-line__username-container')
+  border.style.borderColor = color
+}
 
+const setStyles = (elements: NodeListOf<HTMLElement>) => {
+  elements.forEach((el) => {
+    const nick: HTMLElement = el.querySelector('.chat-author__display-name')
     if (nick) {
-      color = window.getComputedStyle(nick).color
+      const color = window.getComputedStyle(nick).color
+      if (el.style.color !== color) {
+        setBoderAndText(el, color)
+      }
     }
-    if (el.style.color !== color) {
-      el.style.color = color
-    }
+  })
+}
 
-    const border: HTMLElement = el.querySelector(
-      '.chat-line__username-container'
-    )
-    if (border.style.borderColor !== color) {
-      border.style.borderColor = color
-    }
-  }
-
-  const setStyles = (elements: NodeListOf<HTMLElement>) => {
-    elements.forEach((el) => setBoderAndText(el))
-  }
-
+const func = () => {
   let chatMessage: NodeListOf<HTMLElement> = document.querySelectorAll(
     '.chat-line__no-background'
   )
-  setStyles(chatMessage)
 
   let lastLocation = ''
   setInterval(() => {
@@ -50,27 +42,22 @@ const func = () => {
       })
     }
   }, 500)
-
-  addEventListener('click', () => {
-    const answerWindow: HTMLElement = document.querySelector(
-      '.chat-input-tray__open'
-    )
-    let interval
-    interval = setInterval(() => {
-      if (answerWindow) {
-        const messages: NodeListOf<HTMLElement> = answerWindow.querySelectorAll(
-          '.chat-line__no-background'
-        )
-        setStyles(messages)
-      }
-    }, 100)
-    setTimeout(() => clearInterval(interval), 600)
-  })
 }
 
-const chat = document.querySelector('#root')
-
-window.addEventListener('load', () => {
-  mount(chat, el(''))
-  func()
+addEventListener('click', () => {
+  const answerWindow: HTMLElement = document.querySelector(
+    '.chat-input-tray__open'
+  )
+  let interval: number
+  interval = setInterval(() => {
+    if (answerWindow) {
+      const messages: NodeListOf<HTMLElement> = answerWindow.querySelectorAll(
+        '.chat-line__no-background'
+      )
+      setStyles(messages)
+    }
+  }, 100)
+  setTimeout(() => clearInterval(interval), 600)
 })
+
+setTimeout(() => func(), 1000)

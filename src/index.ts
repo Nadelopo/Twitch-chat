@@ -34,12 +34,18 @@ const func = () => {
         chatMessage = document.querySelectorAll('.chat-line__no-background')
         setStyles(chatMessage)
       })
-      let chatContainer = document.querySelector(
-        '.chat-scrollable-area__message-container'
-      )
-      chatObserv.observe(chatContainer, {
-        childList: true,
-      })
+
+      setTimeout(() => {
+        let chatContainer = document.querySelector(
+          '.chat-scrollable-area__message-container'
+        )
+
+        if (chatContainer) {
+          chatObserv.observe(chatContainer, {
+            childList: true,
+          })
+        }
+      }, 500)
     }
   }, 500)
 }

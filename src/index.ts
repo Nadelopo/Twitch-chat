@@ -1,6 +1,26 @@
 import S from './style.css'
 GM_addStyle(S)
 
+function waitForElm(selector) {
+  return new Promise((resolve) => {
+    if (document.querySelector(selector)) {
+      return resolve(document.querySelector(selector))
+    }
+
+    const observer = new MutationObserver((mutations) => {
+      if (document.querySelector(selector)) {
+        resolve(document.querySelector(selector))
+        observer.disconnect()
+      }
+    })
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    })
+  })
+}
+
 const setBoderAndText = (el: HTMLElement, color: string) => {
   el.style.color = color
   const border: HTMLElement = el.querySelector('.chat-line__username-container')
@@ -19,36 +39,30 @@ const setStyles = (elements: NodeListOf<HTMLElement>) => {
   })
 }
 
-const func = () => {
-  let chatMessage: NodeListOf<HTMLElement> = document.querySelectorAll(
-    '.chat-line__no-background'
-  )
+let chatMessage: NodeListOf<HTMLElement> = document.querySelectorAll(
+  '.chat-line__no-background'
+)
 
-  let lastLocation = ''
-  setInterval(() => {
-    const currentLocation = window.location.href
-    if (currentLocation !== lastLocation) {
-      lastLocation = currentLocation
+let lastLocation = ''
+setInterval(() => {
+  const currentLocation = window.location.href
+  if (currentLocation !== lastLocation) {
+    lastLocation = currentLocation
 
-      let chatObserv = new MutationObserver(() => {
-        chatMessage = document.querySelectorAll('.chat-line__no-background')
-        setStyles(chatMessage)
-      })
+    waitForElm('.chat-scrollable-area__message-container').then(
+      (chatContainer: HTMLElement) => {
+        let chatObserv = new MutationObserver(() => {
+          chatMessage = document.querySelectorAll('.chat-line__no-background')
+          setStyles(chatMessage)
+        })
 
-      setTimeout(() => {
-        let chatContainer = document.querySelector(
-          '.chat-scrollable-area__message-container'
-        )
-
-        if (chatContainer) {
-          chatObserv.observe(chatContainer, {
-            childList: true,
-          })
-        }
-      }, 500)
-    }
-  }, 500)
-}
+        chatObserv.observe(chatContainer, {
+          childList: true,
+        })
+      }
+    )
+  }
+}, 500)
 
 addEventListener('click', () => {
   const answerWindow: HTMLElement = document.querySelector(
@@ -65,5 +79,3 @@ addEventListener('click', () => {
   }, 100)
   setTimeout(() => clearInterval(interval), 600)
 })
-
-setTimeout(() => func(), 1000)

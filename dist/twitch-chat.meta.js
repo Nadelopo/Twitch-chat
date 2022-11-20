@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        twitch-chat
-// @version     2.1.1
+// @version     2.1.2
 // @description extensions for chat styling
 // @license     MIT
 // @match       https://www.twitch.tv/*

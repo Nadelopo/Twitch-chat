@@ -64,18 +64,14 @@ setInterval(() => {
   }
 }, 500)
 
-addEventListener('click', () => {
+addEventListener('click', async () => {
+  await waitForElm('.chat-input-tray__open .chat-line__no-background')
+
   const answerWindow: HTMLElement = document.querySelector(
     '.chat-input-tray__open'
   )
-  let interval: number
-  interval = setInterval(() => {
-    if (answerWindow) {
-      const messages: NodeListOf<HTMLElement> = answerWindow.querySelectorAll(
-        '.chat-line__no-background'
-      )
-      setStyles(messages)
-    }
-  }, 100)
-  setTimeout(() => clearInterval(interval), 600)
+  const chatElements: NodeListOf<HTMLElement> = answerWindow.querySelectorAll(
+    '.chat-line__no-background'
+  )
+  setStyles(chatElements)
 })

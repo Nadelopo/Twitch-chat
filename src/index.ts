@@ -33,6 +33,7 @@ const setStyles = (elements: NodeListOf<HTMLElement>) => {
     if (nick) {
       const color = window.getComputedStyle(nick).color
       if (el.style.color !== color) {
+        el.querySelectorAll('span[aria-hidden="true"]')?.[0]?.remove()
         setBoderAndText(el, color)
       }
     }

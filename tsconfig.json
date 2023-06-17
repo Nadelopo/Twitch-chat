@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
-    "outDir": "dist",
-    "target": "es2015"
+    "target": "ES2015",
+    "strictNullChecks": true,
+    "preserveValueImports": false,
+    "verbatimModuleSyntax": false,
+    "composite": true
   },
-  "include": [
-    "src/**/*"
-  ]
+  "include": ["src/**/*"]
 }

@@ -1,78 +1,117 @@
-import S from './style.css'
-GM_addStyle(S)
+import { watchUrl } from './utils/watchUrl'
+import { waitElement } from './utils/waitElement'
+import Sdefault from './styles/default.css'
+import Sffz from './styles/ffz.css'
 
-function waitForElm(selector) {
-  return new Promise((resolve) => {
-    if (document.querySelector(selector)) {
-      return resolve(document.querySelector(selector))
-    }
+let isFfz = false
+waitElement('#ffz-script').then(() => {
+  isFfz = true
+})
 
-    const observer = new MutationObserver((mutations) => {
-      if (document.querySelector(selector)) {
-        resolve(document.querySelector(selector))
-        observer.disconnect()
-      }
-    })
-
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-    })
-  })
-}
-
-const setBoderAndText = (el: HTMLElement, color: string) => {
-  el.style.color = color
-  const border: HTMLElement = el.querySelector('.chat-line__username-container')
-  border.style.borderColor = color
-}
-
-const setStyles = (elements: NodeListOf<HTMLElement>) => {
-  elements.forEach((el) => {
-    const nick: HTMLElement = el.querySelector('.chat-author__display-name')
-    if (nick) {
-      const color = window.getComputedStyle(nick).color
-      if (el.style.color !== color) {
-        el.querySelectorAll('span[aria-hidden="true"]')?.[0]?.remove()
-        setBoderAndText(el, color)
-      }
-    }
-  })
-}
-
-let chatMessage: NodeListOf<HTMLElement> = document.querySelectorAll(
-  '.chat-line__no-background'
-)
-
-let lastLocation = ''
-setInterval(() => {
-  const currentLocation = window.location.href
-  if (currentLocation !== lastLocation) {
-    lastLocation = currentLocation
-
-    waitForElm('.chat-scrollable-area__message-container').then(
-      (chatContainer: HTMLElement) => {
-        let chatObserv = new MutationObserver(() => {
-          chatMessage = document.querySelectorAll('.chat-line__no-background')
-          setStyles(chatMessage)
-        })
-
-        chatObserv.observe(chatContainer, {
-          childList: true,
-        })
-      }
+const setStyles = (messages: NodeListOf<HTMLElement>) => {
+  for (const message of messages) {
+    if (message.classList.contains('message__changed')) continue
+    message.classList.add('message__changed')
+    const nick = message.querySelector(
+      isFfz ? '.chat-line__username' : '.chat-author__display-name'
     )
+    if (!nick) continue
+    const color = getComputedStyle(nick).color
+
+    const textFragments =
+      message.querySelectorAll<HTMLElement>('.text-fragment')
+    textFragments.forEach((e) => (e.style.color = color))
+
+    if (isFfz) {
+      const mentions = message.querySelectorAll<HTMLElement>(
+        '.chat-line__message-mention '
+      )
+      mentions.forEach((e) => (e.style.color = color))
+
+      const checkBr = message.querySelector<HTMLElement>('br') ? true : false
+      if (!checkBr) {
+        nick.insertAdjacentElement('afterend', document.createElement('br'))
+      }
+
+      const badges = message.querySelector<HTMLElement>(
+        '.chat-line__message--badges'
+      )
+      if (badges) {
+        for (const badge of badges.children) {
+          if (badge instanceof HTMLElement) {
+            badge.style.borderColor = color
+          }
+        }
+
+        nick.insertAdjacentElement('afterend', badges)
+      }
+    } else {
+      const mentions =
+        message.querySelectorAll<HTMLElement>('.mention-fragment')
+      mentions.forEach((e) => (e.style.color = color))
+
+      const userNameContainer = message.querySelector<HTMLElement>(
+        '.chat-line__username-container'
+      )
+      userNameContainer?.insertAdjacentElement(
+        'afterend',
+        document.createElement('br')
+      )
+
+      const userName = userNameContainer?.querySelector<HTMLElement>(
+        '.chat-line__username'
+      )
+      if (userName) {
+        userName.style.borderColor = color
+      }
+
+      const badges = message.querySelector('.chat-line__username-container')
+        ?.children[0]
+      if (badges) {
+        userName?.insertAdjacentElement('afterend', badges)
+      }
+    }
   }
-}, 500)
+}
 
-addEventListener('click', async () => {
-  await waitForElm('.chat-input-tray__open .chat-line__no-background')
+watchUrl(async () => {
+  const chatContainer = await waitElement(
+    '.chat-scrollable-area__message-container'
+  )
 
-  const answerWindow: HTMLElement = document.querySelector(
-    '.chat-input-tray__open'
+  const chatObserv = new MutationObserver(() => {
+    const messages = document.querySelectorAll<HTMLElement>(
+      '.chat-line__message'
+    )
+    if (isFfz) {
+      GM_addStyle(Sffz)
+    } else {
+      GM_addStyle(Sdefault)
+    }
+    setStyles(messages)
+  })
+
+  chatObserv.observe(chatContainer, {
+    childList: true,
+    subtree: true
+  })
+})
+
+// let loadAnswerWindow = true
+// let timeout = 0
+window.addEventListener('click', async () => {
+  // clearTimeout(timeout)
+  // if (loadAnswerWindow) {
+  // loadAnswerWindow = false
+  await waitElement('.chat-input-tray__open .chat-line__message')
+
+  // loadAnswerWindow = true
+  const messages = document.querySelectorAll<HTMLElement>(
+    '.chat-input-tray__open .chat-line__message'
   )
-  const chatElements: NodeListOf<HTMLElement> = answerWindow.querySelectorAll(
-    '.chat-line__no-background'
-  )
-  setStyles(chatElements)
+  setStyles(messages)
+  // }
+  // timeout = setTimeout(() => {
+  //   loadAnswerWindow = true
+  // }, 10000)
 })

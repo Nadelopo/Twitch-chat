@@ -15,17 +15,17 @@ const setStyles = (message: HTMLElement) => {
   if (!nick) return
 
   const color = getComputedStyle(nick).color
-
   const textFragments = message.querySelectorAll<HTMLElement>('.text-fragment')
   textFragments.forEach((e) => (e.style.color = color))
+  const mentions = message.querySelectorAll<HTMLElement>(
+    isFfz ? '.chat-line__message-mention ' : '.mention-fragment'
+  )
+  mentions.forEach((e) => (e.style.color = color))
+  const checkBr = message.querySelector<HTMLElement>('br') ? true : false
+
   if (isFfz) {
-    const mentions = message.querySelectorAll<HTMLElement>(
-      '.chat-line__message-mention '
-    )
-    mentions.forEach((e) => (e.style.color = color))
-    const checkBr = message.querySelector<HTMLElement>('br') ? true : false
     if (!checkBr) {
-      nick.insertAdjacentElement('afterend', document.createElement('br'))
+      nick.after(document.createElement('br'))
     }
     const badges = message.querySelector<HTMLElement>(
       '.chat-line__message--badges'
@@ -36,28 +36,25 @@ const setStyles = (message: HTMLElement) => {
           badge.style.borderColor = color
         }
       }
-      nick.insertAdjacentElement('afterend', badges)
+      nick.after(badges)
     }
   } else {
-    const mentions = message.querySelectorAll<HTMLElement>('.mention-fragment')
-    mentions.forEach((e) => (e.style.color = color))
     const userNameContainer = message.querySelector<HTMLElement>(
       '.chat-line__username-container'
     )
-    userNameContainer?.insertAdjacentElement(
-      'afterend',
-      document.createElement('br')
-    )
+    if (!checkBr) {
+      userNameContainer?.after(document.createElement('br'))
+    }
     const userName = userNameContainer?.querySelector<HTMLElement>(
       '.chat-line__username'
     )
     if (userName) {
       userName.style.borderColor = color
     }
-    const badges = message.querySelector('.chat-line__username-container')
-      ?.children[0]
+    const badges = userNameContainer?.children[0]
+
     if (badges) {
-      userName?.insertAdjacentElement('afterend', badges)
+      userName?.after(badges)
     }
   }
 }
@@ -68,9 +65,6 @@ watchUrl(async () => {
   )
 
   const chatObserv = new MutationObserver((mutations) => {
-    const messages = document.querySelectorAll<HTMLElement>(
-      '.chat-line__message'
-    )
     if (isFfz) {
       GM_addStyle(Sffz)
     } else {
@@ -96,17 +90,13 @@ watchUrl(async () => {
 })
 
 window.addEventListener('click', async () => {
-  if (document.querySelector('.chat-input-tray__open .chat-line__message'))
-    return
-  await waitElement('.chat-input-tray__open .chat-line__message')
+  const el = await waitElement('.chat-input-tray__open .chat-line__message')
 
   const messages = document.querySelectorAll<HTMLElement>(
     '.chat-input-tray__open .chat-line__message'
   )
 
   for (const message of messages) {
-    if (message instanceof HTMLElement) {
-      setStyles(message)
-    }
+    setStyles(message)
   }
 })

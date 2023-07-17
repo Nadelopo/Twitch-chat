@@ -90,7 +90,7 @@ watchUrl(async () => {
 })
 
 window.addEventListener('click', async () => {
-  const el = await waitElement('.chat-input-tray__open .chat-line__message')
+  await waitElement('.chat-input-tray__open .chat-line__message')
 
   const messages = document.querySelectorAll<HTMLElement>(
     '.chat-input-tray__open .chat-line__message'

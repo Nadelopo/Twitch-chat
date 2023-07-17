@@ -4,6 +4,7 @@
   border-radius: 50px !important;
   margin-right: 5px;
 }
+
 .chat-line__message span[aria-hidden='true'] {
   display: none;
 }

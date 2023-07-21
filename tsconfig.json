@@ -4,7 +4,8 @@
     "strictNullChecks": true,
     "preserveValueImports": false,
     "verbatimModuleSyntax": false,
-    "composite": true
+    "composite": true,
+    "moduleResolution": "Node"
   },
   "include": ["src/**/*"]
 }

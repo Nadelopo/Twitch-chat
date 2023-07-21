@@ -1,16 +1,17 @@
-export const watchUrl = (
-  callback: (...args: any) => void,
-  params?: {
-    timeCheckUrl: number
+type NavigateEvent = {
+  destination: {
+    url: string
   }
-) => {
-  const time = params?.timeCheckUrl ?? 500
-  let lastLocation = ''
-  setInterval(() => {
-    const currentLocation = window.location.href
-    if (currentLocation !== lastLocation) {
-      lastLocation = currentLocation
+}
+
+export const watchUrl = (callback: (...args: any) => void) => {
+  let href = window.location.href
+  callback()
+  //@ts-ignore
+  navigation.addEventListener('navigate', (e: NavigateEvent) => {
+    if (href !== e.destination.url) {
       callback()
+      href = e.destination.url
     }
-  }, time)
+  })
 }

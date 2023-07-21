@@ -1,11 +1,13 @@
 import { watchUrl } from './utils/watchUrl'
-import { waitElement } from './utils/waitElement'
+import { waitElement } from '@zero-dependency/dom'
 import Sdefault from './styles/default.css'
 import Sffz from './styles/ffz.css'
 
+GM_addStyle(Sdefault)
 let isFfz = false
-waitElement('#ffz-script').then(() => {
+waitElement({ selector: '#ffz-script', target: document.head }).then(() => {
   isFfz = true
+  GM_addStyle(Sffz)
 })
 
 const setStyles = (message: HTMLElement) => {
@@ -60,16 +62,11 @@ const setStyles = (message: HTMLElement) => {
 }
 
 watchUrl(async () => {
-  const chatContainer = await waitElement(
-    '.chat-scrollable-area__message-container'
-  )
+  const chatContainer = await waitElement({
+    selector: '.chat-scrollable-area__message-container'
+  })
 
   const chatObserv = new MutationObserver((mutations) => {
-    if (isFfz) {
-      GM_addStyle(Sffz)
-    } else {
-      GM_addStyle(Sdefault)
-    }
     for (const record of mutations) {
       const message = record.addedNodes[0]
       if (message instanceof HTMLElement) {
@@ -90,7 +87,7 @@ watchUrl(async () => {
 })
 
 window.addEventListener('click', async () => {
-  await waitElement('.chat-input-tray__open .chat-line__message')
+  await waitElement({ selector: '.chat-input-tray__open .chat-line__message' })
 
   const messages = document.querySelectorAll<HTMLElement>(
     '.chat-input-tray__open .chat-line__message'

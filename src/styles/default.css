@@ -1,11 +1,15 @@
 .chat-line__username {
   padding: 1px 6px;
-  border: 2px solid #fff;
+  border: 2px solid var(--chat-messege-color);
   border-radius: 50px !important;
   margin-right: 5px;
-  border-color: inherit;
 }
 
 .chat-line__message span[aria-hidden='true'] {
   display: none;
+}
+
+.chat-line__message .message,
+span[data-a-target='chat-line-message-body'] {
+  color: var(--chat-messege-color);
 }

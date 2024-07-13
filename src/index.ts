@@ -5,68 +5,59 @@ import Sffz from './styles/ffz.css'
 
 GM_addStyle(Sdefault)
 let isFfz = false
-waitElement({ selector: '#ffz-script', target: document.head }).then(() => {
+waitElement({
+  selector: '#ffz-script',
+  target: document.head,
+  rejectTimeoutMs: 10000
+}).then(() => {
   isFfz = true
   GM_addStyle(Sffz)
 })
 
 const setStyles = (message: HTMLElement) => {
+  const isBreakElement = Boolean(message.querySelector<HTMLElement>('br'))
+  if (isBreakElement) return // already modified element
   const nick = message.querySelector(
     isFfz ? '.chat-line__username' : '.chat-author__display-name'
   )
   if (!nick) return
-
   const color = getComputedStyle(nick).color
-  const textFragments = message.querySelectorAll<HTMLElement>('.text-fragment')
-  textFragments.forEach((e) => (e.style.color = color))
-  const mentions = message.querySelectorAll<HTMLElement>(
-    isFfz ? '.chat-line__message-mention ' : '.mention-fragment'
-  )
-  mentions.forEach((e) => (e.style.color = color))
-  const checkBr = message.querySelector<HTMLElement>('br') ? true : false
+  message.style.setProperty('--chat-messege-color', color)
 
   if (isFfz) {
-    if (!checkBr) {
-      nick.after(document.createElement('br'))
-    }
+    nick.after(document.createElement('br'))
     const badges = message.querySelector<HTMLElement>(
       '.chat-line__message--badges'
     )
     if (badges) {
-      for (const badge of badges.children) {
-        if (badge instanceof HTMLElement) {
-          badge.style.borderColor = color
-        }
-      }
       nick.after(badges)
     }
   } else {
     const userNameContainer = message.querySelector<HTMLElement>(
       '.chat-line__username-container'
     )
-    if (!checkBr) {
-      userNameContainer?.after(document.createElement('br'))
-    }
+    userNameContainer?.after(document.createElement('br'))
     const userName = userNameContainer?.querySelector<HTMLElement>(
       '.chat-line__username'
     )
-    if (userName) {
-      userName.style.borderColor = color
-    }
-    const badges = userNameContainer?.children[0]
-
+    const badges = userNameContainer?.firstChild
     if (badges) {
       userName?.after(badges)
     }
   }
 }
 
-watchUrl(async () => {
+let chatObserv: MutationObserver
+const setObserve = async () => {
   const chatContainer = await waitElement({
     selector: '.chat-scrollable-area__message-container'
   })
 
-  const chatObserv = new MutationObserver((mutations) => {
+  if (chatObserv) {
+    chatObserv.disconnect()
+  }
+
+  chatObserv = new MutationObserver((mutations) => {
     for (const record of mutations) {
       const message = record.addedNodes[0]
       if (message instanceof HTMLElement) {
@@ -84,15 +75,36 @@ watchUrl(async () => {
     childList: true,
     subtree: true
   })
-})
+}
+watchUrl(setObserve)
+
+// const init = () => {
+//   const parentNode = document.querySelector('body')
+//   const observer = new MutationObserver((_, observer) => {
+//     const el = document.querySelector(
+//       '.chat-scrollable-area__message-container div'
+//     )
+//     if (el) {
+//       console.log(el)
+
+//       setObserve()
+//       observer.disconnect()
+//     }
+//   })
+//   if (parentNode) {
+//     observer.observe(parentNode, { childList: true, subtree: true })
+//   }
+// }
+// init()
 
 window.addEventListener('click', async () => {
-  await waitElement({ selector: '.chat-input-tray__open .chat-line__message' })
-
+  await waitElement({
+    selector: '.chat-input-tray__open .chat-line__message',
+    rejectTimeoutMs: 1000
+  })
   const messages = document.querySelectorAll<HTMLElement>(
     '.chat-input-tray__open .chat-line__message'
   )
-
   for (const message of messages) {
     setStyles(message)
   }

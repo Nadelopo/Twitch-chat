@@ -10,7 +10,7 @@
 .chat-line__message .ffz-badge {
   background-repeat: no-repeat;
   margin-right: 6px !important;
-  border: 1px solid transparent;
+  border: 1px solid var(--chat-messege-color);
 }
 
 .ffz-emote {

@@ -12,6 +12,21 @@ waitElement({
 }).then(() => {
   isFfz = true
   GM_addStyle(Sffz)
+
+  // setStyleForMessageWithMention
+  const style = document.createElement('style')
+  document.head.appendChild(style)
+  const sheet = style.sheet
+
+  const parseCookie = document.cookie.split(/; /)
+  const userName = parseCookie
+    .find((e) => e.includes('name='))
+    ?.replace('name=', '')
+
+  sheet?.insertRule(
+    `.chat-line__message:has([data-login="${userName}"]) { background: #501919; }`,
+    sheet.cssRules.length
+  )
 })
 
 const setStyles = (message: HTMLElement) => {

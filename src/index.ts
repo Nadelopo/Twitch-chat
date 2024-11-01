@@ -77,8 +77,8 @@ const setObserve = async () => {
       const message = record.addedNodes[0]
       if (message instanceof HTMLElement) {
         if (
-          message.classList.contains('chat-line__message') ||
-          message.classList.contains('chat-line__message-container')
+          message.querySelector('.chat-line__message') ||
+          message.querySelector('.chat-line__message-container')
         ) {
           setStyles(message)
         }

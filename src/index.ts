@@ -63,11 +63,21 @@ const setStyles = (message: HTMLElement) => {
 }
 
 let chatObserv: MutationObserver
-const setObserve = async () => {
-  const chatContainer = await waitElement({
-    selector: '.chat-scrollable-area__message-container'
-  })
+let chatContainer: HTMLElement
 
+const setRootObserver = () => {
+  setInterval(() => {
+    const newChatContainer = document.querySelector<HTMLElement>(
+      '.chat-scrollable-area__message-container'
+    )
+    if (newChatContainer && newChatContainer !== chatContainer) {
+      chatContainer = newChatContainer
+      setObserve()
+    }
+  }, 1000)
+}
+
+const setObserve = async () => {
   if (chatObserv) {
     chatObserv.disconnect()
   }
@@ -91,26 +101,8 @@ const setObserve = async () => {
     subtree: true
   })
 }
-watchUrl(setObserve)
 
-// const init = () => {
-//   const parentNode = document.querySelector('body')
-//   const observer = new MutationObserver((_, observer) => {
-//     const el = document.querySelector(
-//       '.chat-scrollable-area__message-container div'
-//     )
-//     if (el) {
-//       console.log(el)
-
-//       setObserve()
-//       observer.disconnect()
-//     }
-//   })
-//   if (parentNode) {
-//     observer.observe(parentNode, { childList: true, subtree: true })
-//   }
-// }
-// init()
+watchUrl(setRootObserver)
 
 window.addEventListener('click', async () => {
   await waitElement({
